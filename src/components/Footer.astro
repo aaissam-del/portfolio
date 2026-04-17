@@ -24,7 +24,7 @@ import { footerNavItems, profile, socialLinks } from '../data/profile';
       <h3>Navigation</h3>
       <div class="site-footer__nav-links">
         {footerNavItems.map((item) => (
-          <a href={`#${item.id}`} class="site-footer__link">
+          <a href={item.href} class="site-footer__link">
             <Icon name={item.icon} class="site-footer__link-icon" />
             <span>{item.label}</span>
           </a>

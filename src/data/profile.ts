@@ -29,6 +29,7 @@ export type SocialLink = {
 
 export type NavItem = {
   id: string;
+  href: string;
   label: string;
   icon: IconName;
 };
@@ -37,6 +38,15 @@ export type AboutCard = {
   number: string;
   title: string;
   body: string;
+};
+
+export type ProjectEntry = {
+  title: string;
+  summary: string;
+  stack: string[];
+  repoUrl: string;
+  collaboration: string;
+  note?: string;
 };
 
 export type SectionLink = {
@@ -107,7 +117,17 @@ export const education: never[] = [];
 export const experience: never[] = [];
 export const publications: never[] = [];
 export const certifications: never[] = [];
-export const projects: never[] = [];
+export const projects: ProjectEntry[] = [
+  {
+    title: 'SurvivorC',
+    summary:
+      'Jeu 2D top-down de survie en C11 avec Raylib, incluant vagues d’ennemis dynamiques, score combo, abilities (Purge, Jam, Sprint) et effets visuels.',
+    stack: ['C11', 'Raylib', 'Makefile', 'MinGW-w64'],
+    repoUrl: 'https://github.com/Anas404tgg/survivorc',
+    collaboration: 'Collaboration avec Anas Boulif via GitHub Copilot',
+    note: 'Projet académique avec architecture modulaire (player, enemy, AI, collisions, UI, particles, effects).',
+  },
+];
 
 export const heroStats: Array<{ label: string; value: string }> = [];
 
@@ -129,13 +149,14 @@ export const contactLinks: SectionLink[] = [
 ];
 
 const activeSections = [
-  { id: 'about', label: 'À propos', icon: 'user' as const, visible: aboutCards.length > 0 },
-  { id: 'contact', label: 'Contact', icon: 'mail' as const, visible: true },
+  { id: 'about', href: '/#about', label: 'À propos', icon: 'user' as const, visible: aboutCards.length > 0 },
+  { id: 'projects', href: '/projects', label: 'Projets', icon: 'folder' as const, visible: projects.length > 0 },
+  { id: 'contact', href: '/#contact', label: 'Contact', icon: 'mail' as const, visible: true },
 ];
 
 export const navItems: NavItem[] = activeSections
   .filter((section) => section.visible)
-  .map((section) => ({ id: section.id, label: section.label, icon: section.icon }));
+  .map((section) => ({ id: section.id, href: section.href, label: section.label, icon: section.icon }));
 
 export const footerNavItems = navItems;
 

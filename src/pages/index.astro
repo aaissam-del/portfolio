@@ -1,11 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CoverBanner from '../components/CoverBanner.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
 import { profile } from '../data/profile';
 ---
 <BaseLayout title={`${profile.fullName} | Portfolio étudiant`} description={profile.subtitle}>
+	<CoverBanner />
 	<Hero />
 	<About />
 	<Contact />

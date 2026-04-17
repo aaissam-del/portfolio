@@ -30,16 +30,19 @@ const quickActions = [
 <div class="ai-assistant" data-ai-assistant>
   <button class="ai-assistant__toggle" type="button" aria-label="Ouvrir l'assistant IA" aria-expanded="false" data-ai-toggle>
     <span class="ai-assistant__pulse"></span>
-    <Icon name="bot" class="ai-assistant__icon" />
-    <span class="ai-assistant__label">Portfolio AI</span>
+    <span class="ai-assistant__logo ai-logo-badge" aria-hidden="true">
+      <Icon name="bot" class="ai-logo-glyph" />
+    </span>
   </button>
 
   <section class="ai-panel" aria-hidden="true" data-ai-panel>
     <header class="ai-panel__header">
       <div class="ai-panel__identity">
-        <img src="/robot.jpg" alt="Portfolio AI" class="ai-panel__avatar" />
+        <span class="ai-panel__avatar ai-logo-badge ai-logo-badge--panel" aria-hidden="true">
+          <Icon name="bot" class="ai-logo-glyph ai-logo-glyph--panel" />
+        </span>
         <div>
-          <strong>Portfolio AI</strong>
+          <strong>Assistant</strong>
           <p>Ask about profile, skills, projects or contact</p>
         </div>
       </div>
@@ -134,7 +137,7 @@ const quickActions = [
       if (/linkedin/.test(text)) {
         return `[LinkedIn](${data.socialLinks.find((link) => link.label === 'LinkedIn')?.href || '#'}) ouvre le profil public.`;
       }
-      return `Je peux aider sur **${profile.fullName}** et les sections actives du portfolio: ${data.navItems.map((item) => item.label).join(', ')}.`;
+      return `Je n'ai pas une réponse précise pour cette question sur **${profile.fullName}**.<br /><button class="ai-message__cta" type="button" data-ai-contact-scroll>Envoyer un message par mail</button>`;
     };
 
     const open = () => {
@@ -199,6 +202,22 @@ const quickActions = [
       if (!button) return;
       respond(button.textContent || '');
       chips.classList.add('is-hidden');
+    });
+
+    messages?.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-ai-contact-scroll]');
+      if (!target) return;
+
+      const submitButton = document.querySelector('#contact .contact-form button[type="submit"]');
+      const contactSection = document.querySelector('#contact');
+
+      if (submitButton) {
+        submitButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      closePanel();
     });
   })();
 </script>

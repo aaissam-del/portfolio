@@ -19,7 +19,7 @@ import { navItems, profile, socialLinks } from '../data/profile';
 
     <nav class="site-nav" aria-label="Navigation principale">
       {navItems.map((item) => (
-        <a class="site-nav__link" href={`#${item.id}`} data-nav-link>
+        <a class="site-nav__link" href={item.href} data-nav-link>
           <Icon name={item.icon} class="site-nav__link-icon" />
           <span>{item.label}</span>
         </a>
@@ -48,7 +48,7 @@ import { navItems, profile, socialLinks } from '../data/profile';
 
       <nav class="mobile-drawer__nav" aria-label="Navigation mobile">
         {navItems.map((item) => (
-          <a class="mobile-drawer__link" href={`#${item.id}`} data-nav-link>
+          <a class="mobile-drawer__link" href={item.href} data-nav-link>
             <Icon name={item.icon} class="mobile-drawer__link-icon" />
             <span>{item.label}</span>
           </a>
@@ -80,7 +80,9 @@ import { navItems, profile, socialLinks } from '../data/profile';
       const links = Array.from(document.querySelectorAll('[data-nav-link]'));
       const sections = links
         .map((link) => {
-          const hash = link.getAttribute('href') || '';
+          const href = link.getAttribute('href') || '';
+          const hashIndex = href.indexOf('#');
+          const hash = hashIndex >= 0 ? href.slice(hashIndex) : '';
           return hash.startsWith('#') ? document.querySelector(hash) : null;
         })
         .filter(Boolean);
@@ -128,7 +130,12 @@ import { navItems, profile, socialLinks } from '../data/profile';
             const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
             if (!visible?.target) return;
             const id = `#${visible.target.id}`;
-            links.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === id));
+            links.forEach((link) => {
+              const href = link.getAttribute('href') || '';
+              const hashIndex = href.indexOf('#');
+              const hash = hashIndex >= 0 ? href.slice(hashIndex) : '';
+              link.classList.toggle('is-active', hash === id);
+            });
           },
           { threshold: [0.25, 0.5, 0.7], rootMargin: '-20% 0px -55% 0px' }
         );

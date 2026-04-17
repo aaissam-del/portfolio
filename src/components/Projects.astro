@@ -1,0 +1,43 @@
+---
+/**
+ * Projects section rendered from centralized profile data.
+ */
+import Icon from './Icon.astro';
+import { projects } from '../data/profile';
+---
+
+{projects.length > 0 && (
+  <section class="section" id="projects">
+    <div class="container" data-reveal>
+      <div class="section-heading">
+        <p class="section-kicker">Projets</p>
+        <h2>Travaux réalisés et collaborations.</h2>
+      </div>
+
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <article class="info-card project-card">
+            <div class="project-card__top">
+              <h3>{project.title}</h3>
+              <a class="project-card__repo" href={project.repoUrl} target="_blank" rel="noreferrer">
+                <Icon name="github" />
+                <span>Voir sur GitHub</span>
+              </a>
+            </div>
+
+            <p class="project-card__summary">{project.summary}</p>
+            <p class="project-card__collab">{project.collaboration}</p>
+
+            {project.note && <p class="project-card__note">{project.note}</p>}
+
+            <div class="project-card__stack">
+              {project.stack.map((item) => (
+                <span>{item}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
