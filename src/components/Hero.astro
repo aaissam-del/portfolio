@@ -12,7 +12,13 @@ import { heroStats, profile, socialLinks } from '../data/profile';
       <h1 class="hero__title">
         <span class="hero__title-gradient">{profile.fullName}</span>
       </h1>
-      <p class="hero__subtitle">{profile.subtitle}</p>
+      <p
+        class="hero__subtitle hero__subtitle-typing"
+        data-typing-text="Portfolio personnel, presence publique et points de contact reunis dans une interface claire et evolutive."
+        aria-label="Portfolio personnel, presence publique et points de contact reunis dans une interface claire et evolutive."
+      >
+        <span data-typing-output>Portfolio personnel, presence publique et points de contact reunis dans une interface claire et evolutive.</span>
+      </p>
 
       <div class="hero__badge">
         <span class="hero__badge-dot"></span>
@@ -64,4 +70,61 @@ import { heroStats, profile, socialLinks } from '../data/profile';
     <span></span>
     <small>Scroll</small>
   </div>
+
+  <script>
+    (() => {
+      const root = document.querySelector('.hero__subtitle-typing');
+      if (!root) return;
+
+      const output = root.querySelector('[data-typing-output]');
+      const fullText = root.getAttribute('data-typing-text') || 'Portfolio personnel';
+      if (!output || !fullText) return;
+
+      const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) {
+        output.textContent = fullText;
+        return;
+      }
+
+      (async () => {
+        root.dataset.phase = 'typing';
+        output.textContent = '';
+        await wait(250);
+
+        for (let index = 1; index <= fullText.length && root.isConnected; index += 1) {
+          output.textContent = fullText.slice(0, index);
+          await wait(92);
+        }
+
+        if (!root.isConnected) return;
+
+        root.dataset.phase = 'done';
+        output.textContent = fullText;
+      })();
+    })();
+  </script>
+
+  <style>
+    .hero__subtitle-typing {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      min-height: 3.6rem;
+      white-space: normal;
+      width: min(100%, 56ch);
+    }
+
+    @media (max-width: 767px) {
+      .hero__subtitle-typing {
+        min-height: 4.8rem;
+      }
+    }
+
+    .hero__subtitle-typing::after {
+      content: '';
+      display: none;
+    }
+  </style>
 </section>

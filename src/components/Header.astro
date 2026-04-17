@@ -26,6 +26,25 @@ import { navItems, profile, socialLinks } from '../data/profile';
       ))}
     </nav>
 
+    <button class="theme-toggle" type="button" aria-label="Changer le thème" aria-pressed="false" data-theme-toggle>
+      <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+        <svg class="theme-toggle__icon-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18h6" />
+          <path d="M10 21h4" />
+          <path d="M12 3c-3.3 0-6 2.7-6 6 0 2.1 1 3.5 2.2 4.8.9.9 1.5 1.8 1.8 3.2h4c.3-1.4.9-2.3 1.8-3.2C17 12.5 18 11.1 18 9c0-3.3-2.7-6-6-6Z" />
+          <path d="M9.5 9a2.5 2.5 0 0 1 5 0" />
+          <path d="M12 6.5v1.2" />
+          <path d="M7.2 7.2l.9.9" />
+          <path d="M16.8 7.2l-.9.9" />
+        </svg>
+      </span>
+      <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+        <svg class="theme-toggle__icon-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" />
+        </svg>
+      </span>
+    </button>
+
     <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" data-menu-toggle>
       <span></span>
       <span></span>
@@ -73,6 +92,8 @@ import { navItems, profile, socialLinks } from '../data/profile';
     // Handle sticky shrink, drawer toggling and intersection-based active link highlighting.
     (() => {
       const header = document.querySelector('[data-site-header]');
+      const themeToggle = document.querySelector('[data-theme-toggle]');
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
       const toggle = document.querySelector('[data-menu-toggle]');
       const drawer = document.querySelector('[data-mobile-drawer]');
       const backdrop = document.querySelector('[data-drawer-backdrop]');
@@ -96,6 +117,57 @@ import { navItems, profile, socialLinks } from '../data/profile';
       };
 
       const closeDrawer = () => setDrawer(false);
+
+      const themeColors = {
+        dark: '#0a0f1e',
+        light: '#f4efe6',
+      };
+
+      const getTheme = () => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+
+      const applyTheme = (theme) => {
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        themeToggle?.setAttribute('aria-pressed', String(theme === 'light'));
+        if (themeMeta) themeMeta.setAttribute('content', themeColors[theme] || themeColors.dark);
+
+        try {
+          window.localStorage.setItem('portfolio-theme', theme);
+        } catch {
+          /* ignore storage errors */
+        }
+      };
+
+      const playThemeTransition = () => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) return;
+
+        const root = document.documentElement;
+        const button = themeToggle;
+        if (button) {
+          const rect = button.getBoundingClientRect();
+          root.style.setProperty('--theme-flash-x', `${rect.left + rect.width / 2}px`);
+          root.style.setProperty('--theme-flash-y', `${rect.top + rect.height / 2}px`);
+
+          button.classList.remove('is-rotating');
+          void button.offsetWidth;
+          button.classList.add('is-rotating');
+          window.setTimeout(() => button.classList.remove('is-rotating'), 560);
+        }
+
+        root.classList.remove('theme-switch-animate');
+        void root.offsetWidth;
+        root.classList.add('theme-switch-animate');
+        window.setTimeout(() => root.classList.remove('theme-switch-animate'), 720);
+      };
+
+      const initialTheme = getTheme();
+      applyTheme(initialTheme);
+
+      themeToggle?.addEventListener('click', () => {
+        playThemeTransition();
+        applyTheme(getTheme() === 'light' ? 'dark' : 'light');
+      });
 
       toggle?.addEventListener('click', () => {
         const isOpen = toggle.getAttribute('aria-expanded') === 'true';

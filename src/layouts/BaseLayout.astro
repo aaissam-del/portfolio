@@ -30,6 +30,32 @@ const {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const storageKey = 'portfolio-theme';
+        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+
+        let theme = 'dark';
+        try {
+          const savedTheme = window.localStorage.getItem(storageKey);
+          if (savedTheme === 'light' || savedTheme === 'dark') {
+            theme = savedTheme;
+          } else {
+            theme = prefersLight ? 'light' : 'dark';
+          }
+        } catch {
+          theme = prefersLight ? 'light' : 'dark';
+        }
+
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeMeta) {
+          themeMeta.setAttribute('content', theme === 'light' ? '#f4efe6' : '#0a0f1e');
+        }
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#content">Aller au contenu</a>
