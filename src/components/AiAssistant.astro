@@ -31,20 +31,24 @@ const quickActions = [
   <button class="ai-assistant__toggle" type="button" aria-label="Ouvrir l'assistant IA" aria-expanded="false" data-ai-toggle>
     <span class="ai-assistant__pulse"></span>
     <Icon name="bot" class="ai-assistant__icon" />
+    <span class="ai-assistant__label">Portfolio AI</span>
   </button>
 
   <section class="ai-panel" aria-hidden="true" data-ai-panel>
     <header class="ai-panel__header">
       <div class="ai-panel__identity">
-        <span class="ai-panel__avatar">PA</span>
+        <img src="/robot.jpg" alt="Portfolio AI" class="ai-panel__avatar" />
         <div>
           <strong>Portfolio AI</strong>
-          <p><span class="ai-panel__status"></span> Online</p>
+          <p>Ask about profile, skills, projects or contact</p>
         </div>
       </div>
-      <button class="ai-panel__close" type="button" aria-label="Fermer" data-ai-close>
-        <Icon name="close" />
-      </button>
+      <div class="ai-panel__header-actions">
+        <span class="ai-panel__live"><span></span> Online</span>
+        <button class="ai-panel__close" type="button" aria-label="Fermer" data-ai-close>
+          <Icon name="close" />
+        </button>
+      </div>
     </header>
 
     <div class="ai-panel__messages" data-ai-messages></div>
@@ -91,7 +95,12 @@ const quickActions = [
     const appendMessage = (role, html) => {
       const item = document.createElement('div');
       item.className = `ai-message ai-message--${role}`;
-      item.innerHTML = `<div class="ai-message__bubble">${html}</div>`;
+      item.innerHTML = `
+        <span class="ai-message__avatar ai-message__avatar--${role}">${role === 'bot' ? 'AI' : 'ME'}</span>
+        <div class="ai-message__body">
+          <div class="ai-message__bubble">${html}</div>
+        </div>
+      `;
       messages.appendChild(item);
       messages.scrollTop = messages.scrollHeight;
     };
@@ -152,7 +161,12 @@ const quickActions = [
       appendMessage('user', renderMarkdown(question));
       const typing = document.createElement('div');
       typing.className = 'ai-message ai-message--bot ai-message--typing';
-      typing.innerHTML = '<div class="ai-message__bubble"><span></span><span></span><span></span></div>';
+      typing.innerHTML = `
+        <span class="ai-message__avatar ai-message__avatar--bot">AI</span>
+        <div class="ai-message__body">
+          <div class="ai-message__bubble"><span></span><span></span><span></span></div>
+        </div>
+      `;
       messages.appendChild(typing);
       messages.scrollTop = messages.scrollHeight;
 
