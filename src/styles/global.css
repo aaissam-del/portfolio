@@ -293,9 +293,19 @@ textarea {
   transition: opacity 650ms ease, transform 650ms cubic-bezier(0.2, 1, 0.22, 1);
 }
 
+[data-reveal].is-prepared > * {
+  opacity: 0;
+  transform: translateY(18px) scale(0.995);
+}
+
 [data-reveal].is-revealed {
   opacity: 1;
   transform: translateY(0);
+}
+
+[data-reveal].is-revealed > * {
+  animation: reveal-cascade 560ms cubic-bezier(0.2, 1, 0.22, 1) both;
+  animation-delay: calc(var(--reveal-index, 0) * 70ms + 50ms);
 }
 
 .site-nav__link,
@@ -843,8 +853,35 @@ textarea {
   opacity: 1;
 }
 
+.info-card::after,
+.contact-form::after {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--hover-x, 50%) var(--hover-y, 0%), rgba(255, 138, 61, 0.14), transparent 52%);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
 .info-card {
   padding: 1.3rem;
+  transition: transform 280ms cubic-bezier(0.2, 1, 0.22, 1), border-color 240ms ease, box-shadow 280ms ease, background 280ms ease;
+}
+
+@media (hover: hover) {
+  .info-card:hover,
+  .contact-form:hover {
+    transform: translateY(-6px) scale(1.01);
+    border-color: rgba(255, 138, 61, 0.32);
+    box-shadow: 0 28px 62px rgba(0, 0, 0, 0.44), 0 0 0 1px rgba(255, 138, 61, 0.15);
+    background: linear-gradient(180deg, rgba(31, 13, 13, 0.9), rgba(10, 9, 9, 0.9));
+  }
+
+  .info-card:hover::after,
+  .contact-form:hover::after {
+    opacity: 1;
+  }
 }
 
 .about-card {
@@ -1431,6 +1468,19 @@ textarea {
   display: grid;
   place-items: center;
   background: linear-gradient(135deg, rgba(127, 29, 29, 0.55), rgba(239, 68, 68, 0.38));
+}
+
+@keyframes reveal-cascade {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.995);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
 @keyframes pulse {

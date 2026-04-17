@@ -6,7 +6,7 @@
 
 <section class="cover-banner" aria-label="AI Portfolio Cover">
   <div class="cover-banner__background">
-    <svg class="cover-banner__illustration" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg class="cover-banner__illustration" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
       <!-- Background gradient elements -->
       <defs>
         <linearGradient id="botGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -24,7 +24,8 @@
 
       <!-- Animated background circles -->
       <circle cx="150" cy="100" r="80" fill="url(#botGradient)" opacity="0.6" class="circle-float" />
-      <circle cx="1100" cy="300" r="120" fill="url(#botGradient)" opacity="0.4" class="circle-float" style="animation-delay: -1s;" />
+      <circle cx="1030" cy="300" r="120" fill="url(#botGradient)" opacity="0.4" class="circle-float" style="animation-delay: -1s;" />
+      <circle cx="600" cy="150" r="74" fill="rgba(255,77,77,0.18)" class="robot-halo" />
       
       <!-- Robot Head -->
       <g transform="translate(600, 150)" filter="url(#glow)">
@@ -83,6 +84,8 @@
       </g>
     </svg>
   </div>
+  <span class="cover-banner__ambient cover-banner__ambient--one" aria-hidden="true"></span>
+  <span class="cover-banner__ambient cover-banner__ambient--two" aria-hidden="true"></span>
 
   <div class="cover-banner__content">
     <h2 class="cover-banner__title">Bienvenue sur mon Portfolio</h2>
@@ -92,28 +95,44 @@
   <style define:vars={{}}>
     .cover-banner {
       position: relative;
-      height: 320px;
+      min-height: clamp(20rem, 34vw, 24rem);
       overflow: hidden;
       margin-top: -6.4rem;
-      padding-top: 4rem;
+      border-radius: 32px;
       background: linear-gradient(135deg, rgba(5,5,5,0.4) 0%, rgba(20,20,20,0.6) 50%, rgba(5,5,5,0.4) 100%);
+      isolation: isolate;
+    }
+
+    .cover-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.035), transparent 32%, transparent 72%, rgba(255, 138, 61, 0.06));
+      mix-blend-mode: screen;
+      opacity: 0.34;
+      z-index: 2;
     }
 
     .cover-banner__background {
       position: absolute;
       inset: 0;
       overflow: hidden;
+      display: grid;
+      place-items: center;
     }
 
     .cover-banner__illustration {
-      width: 100%;
+      width: min(100%, 72rem);
       height: 100%;
-      opacity: 0.85;
+      opacity: 0.94;
+      transform: translateY(3%);
+      pointer-events: none;
     }
 
     .cover-banner__content {
       position: relative;
-      z-index: 10;
+      z-index: 12;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -121,23 +140,56 @@
       height: 100%;
       text-align: center;
       padding: 2rem;
+      transform: translateY(30%);
+    }
+
+    .cover-banner__ambient {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(34px);
+      pointer-events: none;
+      z-index: 1;
+      animation: ambientDrift 10s ease-in-out infinite;
+    }
+
+    .cover-banner__ambient--one {
+      width: 20rem;
+      height: 20rem;
+      top: -6rem;
+      left: -3rem;
+      background: radial-gradient(circle, rgba(255, 77, 77, 0.16), rgba(255, 77, 77, 0));
+    }
+
+    .cover-banner__ambient--two {
+      width: 16rem;
+      height: 16rem;
+      right: -2rem;
+      bottom: -5rem;
+      background: radial-gradient(circle, rgba(255, 138, 61, 0.14), rgba(255, 138, 61, 0));
+      animation-delay: -4.5s;
     }
 
     .cover-banner__title {
       margin: 0;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-size: clamp(2.6rem, 7vw, 5rem);
       font-weight: 700;
-      background: linear-gradient(135deg, #ff4d4d, #ff8a3d);
+      letter-spacing: 0.03em;
+      text-transform: none;
+      line-height: 0.95;
+      background: linear-gradient(120deg, #ffe3e3 0%, #ff9d9d 30%, #ffbe8a 56%, #ff8e8e 82%, #ffe3e3 100%);
+      background-size: 220% 100%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      text-shadow: 0 8px 22px rgba(0, 0, 0, 0.34), 0 0 18px rgba(255, 138, 61, 0.14);
+      filter: drop-shadow(0 0 6px rgba(255, 138, 61, 0.14));
+      animation: titleShimmer 10s linear infinite;
       margin-bottom: 0.5rem;
     }
 
     .cover-banner__subtitle {
       margin: 0;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      font-size: clamp(1rem, 2.25vw, 1.25rem);
       color: rgba(245, 245, 245, 0.75);
       font-weight: 500;
       max-width: 500px;
@@ -182,8 +234,17 @@
       100% { opacity: 0; transform: translateY(-100px); }
     }
 
+    @keyframes titleShimmer {
+      from { background-position: 0% 50%; }
+      to { background-position: 220% 50%; }
+    }
+
     .circle-float {
       animation: float 6s ease-in-out infinite;
+    }
+
+    .robot-halo {
+      animation: haloPulse 2.8s ease-in-out infinite;
     }
 
     .particle {
@@ -192,6 +253,7 @@
 
     .antenna-wave {
       transform-box: fill-box;
+      transform-origin: center;
       animation: antenna-wave 2s ease-in-out infinite;
     }
 
@@ -205,6 +267,7 @@
 
     .arm-swing {
       transform-box: fill-box;
+      transform-origin: center;
       animation: arm-swing 2s ease-in-out infinite;
     }
 
@@ -212,23 +275,39 @@
       animation: core-pulse 2s ease-in-out infinite;
     }
 
+    @keyframes haloPulse {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.14); }
+    }
+
+    @keyframes ambientDrift {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(0, -12px, 0); }
+    }
+
     @media (max-width: 767px) {
       .cover-banner {
-        height: 240px;
-        margin-top: -5rem;
-        padding-top: 2.5rem;
+        min-height: 18rem;
+        margin-top: -5.5rem;
       }
 
       .cover-banner__title {
-        font-size: 1.6rem;
+        font-size: clamp(2.1rem, 11vw, 2.9rem);
+        letter-spacing: 0.02em;
       }
 
       .cover-banner__subtitle {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
       }
 
       .cover-banner__illustration {
-        opacity: 0.7;
+        width: min(140%, 58rem);
+        opacity: 0.78;
+        transform: translateY(6%);
+      }
+
+      .cover-banner__content {
+        transform: translateY(20%);
       }
     }
   </style>
