@@ -1,0 +1,140 @@
+---
+/**
+ * Sticky navigation header with responsive desktop links, animated mobile drawer and active-section tracking.
+ */
+import Icon from './Icon.astro';
+import { navItems, profile, socialLinks } from '../data/profile';
+---
+<header class="site-header" data-site-header>
+  <div class="site-header__inner container">
+    <a class="site-brand" href="#top" aria-label={`${profile.fullName} - accueil`}>
+      <span class="site-brand__mark">
+        <Icon name="logo" class="site-brand__icon" />
+      </span>
+      <span class="site-brand__text">
+        <strong>{profile.fullName}</strong>
+        <small>{profile.title}</small>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Navigation principale">
+      {navItems.map((item) => (
+        <a class="site-nav__link" href={`#${item.id}`} data-nav-link>
+          <Icon name={item.icon} class="site-nav__link-icon" />
+          <span>{item.label}</span>
+        </a>
+      ))}
+    </nav>
+
+    <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" data-menu-toggle>
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <div class="mobile-drawer" data-mobile-drawer aria-hidden="true">
+    <div class="mobile-drawer__backdrop" data-drawer-backdrop></div>
+    <aside class="mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu de navigation">
+      <div class="mobile-drawer__top">
+        <div>
+          <p class="mobile-drawer__eyebrow">Navigation</p>
+          <h2>{profile.fullName}</h2>
+        </div>
+        <button class="mobile-drawer__close" type="button" aria-label="Fermer le menu" data-menu-close>
+          <Icon name="close" />
+        </button>
+      </div>
+
+      <nav class="mobile-drawer__nav" aria-label="Navigation mobile">
+        {navItems.map((item) => (
+          <a class="mobile-drawer__link" href={`#${item.id}`} data-nav-link>
+            <Icon name={item.icon} class="mobile-drawer__link-icon" />
+            <span>{item.label}</span>
+          </a>
+        ))}
+      </nav>
+
+      <div class="mobile-drawer__socials">
+        <p class="mobile-drawer__eyebrow">Liens</p>
+        <div class="mobile-drawer__social-grid">
+          {socialLinks.map((link) => (
+            <a class="mobile-drawer__social" href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined}>
+              <Icon name={link.icon} class="mobile-drawer__social-icon" />
+              <span>{link.label}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Handle sticky shrink, drawer toggling and intersection-based active link highlighting.
+    (() => {
+      const header = document.querySelector('[data-site-header]');
+      const toggle = document.querySelector('[data-menu-toggle]');
+      const drawer = document.querySelector('[data-mobile-drawer]');
+      const backdrop = document.querySelector('[data-drawer-backdrop]');
+      const closeButtons = document.querySelectorAll('[data-menu-close]');
+      const links = Array.from(document.querySelectorAll('[data-nav-link]'));
+      const sections = links
+        .map((link) => {
+          const hash = link.getAttribute('href') || '';
+          return hash.startsWith('#') ? document.querySelector(hash) : null;
+        })
+        .filter(Boolean);
+
+      const setDrawer = (open) => {
+        if (!drawer || !toggle) return;
+        drawer.setAttribute('aria-hidden', String(!open));
+        toggle.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('drawer-open', open);
+        drawer.classList.toggle('is-open', open);
+      };
+
+      const closeDrawer = () => setDrawer(false);
+
+      toggle?.addEventListener('click', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        setDrawer(!isOpen);
+      });
+
+      backdrop?.addEventListener('click', closeDrawer);
+      closeButtons.forEach((button) => button.addEventListener('click', closeDrawer));
+
+      links.forEach((link) => {
+        link.addEventListener('click', () => {
+          closeDrawer();
+        });
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeDrawer();
+        }
+      });
+
+      const onScroll = () => {
+        header?.classList.toggle('is-scrolled', window.scrollY > 12);
+      };
+
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      if ('IntersectionObserver' in window && sections.length) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+            if (!visible?.target) return;
+            const id = `#${visible.target.id}`;
+            links.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === id));
+          },
+          { threshold: [0.25, 0.5, 0.7], rootMargin: '-20% 0px -55% 0px' }
+        );
+
+        sections.forEach((section) => observer.observe(section));
+      }
+    })();
+  </script>
+</header>

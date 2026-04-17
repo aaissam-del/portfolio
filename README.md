@@ -1,43 +1,40 @@
-# Astro Starter Kit: Minimal
+# Portfolio Astro
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Portfolio personnel construit avec Astro et déployé sur Vercel.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Structure
 
 ```text
 /
-├── public/
+├── astro.config.mjs
+├── vercel.json
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── components/
+│   ├── data/
+│   ├── layouts/
+│   ├── pages/
+│   └── styles/
+└── public/
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Le contenu du site est centralisé dans `src/data/profile.ts`. Modifier ce fichier suffit pour mettre à jour le portfolio, la navigation et le chatbot.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Commandes
 
-Any static assets, like images, can be placed in the `public/` directory.
+```sh
+npm install
+npm run dev
+npm run build
+npm run preview
+vercel --yes --prod
+```
 
-## 🧞 Commands
+## Déploiement
 
-All commands are run from the root of the project, from a terminal:
+Le site est configuré pour un déploiement statique sur Vercel. L’URL finale attendue est :
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+https://portfolio-aymane-aissam.vercel.app
 
-## 👀 Want to learn more?
+## Contenu
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Les sections du site s’affichent uniquement lorsqu’elles contiennent des données réelles dans le fichier de données unique. Les sections vides restent absentes de la page et de la navigation.

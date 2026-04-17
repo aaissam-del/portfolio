@@ -1,0 +1,62 @@
+---
+/**
+ * Contact section with direct info cards, social links and a working formsubmit-powered form.
+ */
+import Icon from './Icon.astro';
+import { profile, socialLinks } from '../data/profile';
+---
+<section class="section" id="contact">
+  <div class="container" data-reveal>
+    <div class="section-heading">
+      <p class="section-kicker">Contact</p>
+      <h2>Entrer en relation rapidement.</h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-grid__info">
+        <article class="info-card contact-card">
+          <div class="contact-card__icon"><Icon name="mail" /></div>
+          <div>
+            <p class="contact-card__label">Email</p>
+            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          </div>
+        </article>
+
+        <div class="contact-socials">
+          {socialLinks.map((link) => (
+            <a class="contact-socials__item" href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined}>
+              <Icon name={link.icon} />
+              <span>{link.label}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <form class="contact-form" action={`https://formsubmit.co/${profile.email}`} method="POST">
+        <input type="hidden" name="_subject" value={`Nouveau message pour ${profile.fullName}`} />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_template" value="table" />
+        <label>
+          <span>Nom</span>
+          <input type="text" name="name" placeholder="Votre nom" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" placeholder="votre.email@exemple.com" required />
+        </label>
+        <label>
+          <span>Sujet</span>
+          <input type="text" name="subject" placeholder="Sujet du message" required />
+        </label>
+        <label class="contact-form__message">
+          <span>Message</span>
+          <textarea name="message" rows="6" placeholder="Écrivez votre message" required></textarea>
+        </label>
+        <button class="button button--primary button--full" type="submit">
+          <Icon name="send" />
+          <span>Envoyer le message</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

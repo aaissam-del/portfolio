@@ -1,0 +1,52 @@
+---
+/**
+ * Footer with compact brand summary, quick navigation and social links.
+ */
+import Icon from './Icon.astro';
+import { footerNavItems, profile, socialLinks } from '../data/profile';
+---
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <section class="site-footer__brand">
+      <a class="site-brand site-brand--footer" href="#top">
+        <span class="site-brand__mark">
+          <Icon name="logo" class="site-brand__icon" />
+        </span>
+        <span class="site-brand__text">
+          <strong>{profile.fullName}</strong>
+          <small>{profile.title}</small>
+        </span>
+      </a>
+      <p>{profile.subtitle}</p>
+    </section>
+
+    <nav class="site-footer__nav" aria-label="Navigation rapide">
+      <h3>Navigation</h3>
+      <div class="site-footer__nav-links">
+        {footerNavItems.map((item) => (
+          <a href={`#${item.id}`} class="site-footer__link">
+            <Icon name={item.icon} class="site-footer__link-icon" />
+            <span>{item.label}</span>
+          </a>
+        ))}
+      </div>
+    </nav>
+
+    <section class="site-footer__social">
+      <h3>Connexion</h3>
+      <div class="site-footer__social-links">
+        {socialLinks.map((link) => (
+          <a class={`site-footer__social-link site-footer__social-link--${link.tone}`} href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined}>
+            <Icon name={link.icon} class="site-footer__social-icon" />
+            <span>{link.label}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <div class="site-footer__bottom container">
+    <p>© {new Date().getFullYear()} {profile.fullName}</p>
+    <p>Built with Astro, deployed on Vercel.</p>
+  </div>
+</footer>

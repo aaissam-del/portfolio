@@ -1,0 +1,22 @@
+---
+/**
+ * Floating back-to-top button shown after the visitor has scrolled down.
+ */
+import Icon from './Icon.astro';
+---
+<button class="back-to-top" type="button" aria-label="Revenir en haut" data-back-to-top>
+  <Icon name="arrowUp" />
+</button>
+
+<script>
+  // Reveal the floating control once the page has meaningful scroll depth.
+  (() => {
+    const button = document.querySelector('[data-back-to-top]');
+    if (!button) return;
+
+    const toggle = () => button.classList.toggle('is-visible', window.scrollY > 500);
+    toggle();
+    window.addEventListener('scroll', toggle, { passive: true });
+    button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  })();
+</script>

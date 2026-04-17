@@ -1,0 +1,26 @@
+---
+/**
+ * Two-card about section describing the public profile and the dynamic structure of the portfolio.
+ */
+import { aboutCards } from '../data/profile';
+---
+<section class="section section--tight" id="about">
+  <div class="container" data-reveal>
+    <div class="section-heading">
+      <p class="section-kicker">À propos</p>
+      <h2>Une présentation courte, claire et orientée contact.</h2>
+    </div>
+
+    <div class="about-grid">
+      {aboutCards.map((card) => (
+        <article class="info-card about-card">
+          <div class="about-card__index">{card.number}</div>
+          <div class="about-card__body">
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

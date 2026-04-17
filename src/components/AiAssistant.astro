@@ -1,0 +1,190 @@
+---
+/**
+ * Client-side AI assistant panel that answers questions using the centralized portfolio data.
+ */
+import Icon from './Icon.astro';
+import type { NavItem, ProfileData, SocialLink } from '../data/profile';
+
+const { knowledge } = Astro.props as {
+  knowledge: {
+    profile: ProfileData;
+    aboutCards: Array<{ number: string; title: string; body: string }>;
+    socialLinks: SocialLink[];
+    contactLinks: Array<{ label: string; href: string; external?: boolean }>;
+    navItems: NavItem[];
+    sectionPresence: Record<string, boolean>;
+  };
+};
+
+const quickActions = [
+  `Qui est ${knowledge.profile.firstName} ?`,
+  'À propos',
+  'Contact',
+  'GitHub',
+  'LinkedIn',
+].filter((label) => {
+  if (label === 'À propos') return knowledge.sectionPresence.about;
+  return true;
+});
+---
+<div class="ai-assistant" data-ai-assistant>
+  <button class="ai-assistant__toggle" type="button" aria-label="Ouvrir l'assistant IA" aria-expanded="false" data-ai-toggle>
+    <span class="ai-assistant__pulse"></span>
+    <Icon name="bot" class="ai-assistant__icon" />
+  </button>
+
+  <section class="ai-panel" aria-hidden="true" data-ai-panel>
+    <header class="ai-panel__header">
+      <div class="ai-panel__identity">
+        <span class="ai-panel__avatar">PA</span>
+        <div>
+          <strong>Portfolio AI</strong>
+          <p><span class="ai-panel__status"></span> Online</p>
+        </div>
+      </div>
+      <button class="ai-panel__close" type="button" aria-label="Fermer" data-ai-close>
+        <Icon name="close" />
+      </button>
+    </header>
+
+    <div class="ai-panel__messages" data-ai-messages></div>
+
+    <div class="ai-panel__quick-actions" data-ai-quick-actions>
+      {quickActions.map((action) => (
+        <button class="ai-chip" type="button" data-ai-chip>{action}</button>
+      ))}
+    </div>
+
+    <form class="ai-panel__composer" data-ai-form>
+      <input type="text" placeholder="Posez une question..." data-ai-input />
+      <button type="submit" aria-label="Envoyer">
+        <Icon name="send" />
+      </button>
+    </form>
+  </section>
+</div>
+
+<script define:vars={{ knowledge, quickActions }}>
+  // Lightweight knowledge-based assistant with no network dependency.
+  (() => {
+    const data = knowledge;
+    const root = document.querySelector('[data-ai-assistant]');
+    if (!root) return;
+
+    const toggle = root.querySelector('[data-ai-toggle]');
+    const panel = root.querySelector('[data-ai-panel]');
+    const close = root.querySelector('[data-ai-close]');
+    const form = root.querySelector('[data-ai-form]');
+    const input = root.querySelector('[data-ai-input]');
+    const messages = root.querySelector('[data-ai-messages]');
+    const chips = root.querySelector('[data-ai-quick-actions]');
+    const body = document.body;
+    let greeted = false;
+
+    const renderMarkdown = (value) =>
+      value
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br />');
+
+    const appendMessage = (role, html) => {
+      const item = document.createElement('div');
+      item.className = `ai-message ai-message--${role}`;
+      item.innerHTML = `<div class="ai-message__bubble">${html}</div>`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    };
+
+    const getResponse = (question) => {
+      const text = question.toLowerCase();
+      const profile = data.profile;
+      const hasAbout = data.sectionPresence.about;
+      const hasContact = data.sectionPresence.contact;
+
+      if (/^(salut|bonjour|hello|hey)\b/.test(text)) {
+        return `Bonjour, je peux présenter **${profile.fullName}**, orienter vers les sections disponibles et partager les liens de contact.`;
+      }
+      if (/qui est|à propos|about/.test(text)) {
+        return hasAbout
+          ? `**${profile.fullName}** est présenté ici comme ${profile.title.toLowerCase()}. Le portfolio met surtout en avant ses liens publics et les sections réellement renseignées.`
+          : `Les informations publiques disponibles sont limitées pour le moment, mais le portfolio centralise les liens utiles et les moyens de contact.`;
+      }
+      if (/contact|email|mail|linkedin|github/.test(text)) {
+        return `Vous pouvez écrire à [${profile.email}](mailto:${profile.email}) ou ouvrir ses profils publics sur GitHub et LinkedIn.`;
+      }
+      if (/aide|help|quoi demander/.test(text)) {
+        return `Vous pouvez demander **À propos**, **Contact**, **GitHub** ou me demander d'ouvrir une section du portfolio.`;
+      }
+      if (/merci|thanks/.test(text)) {
+        return 'Avec plaisir. Si vous voulez, je peux aussi vous orienter vers un lien précis.';
+      }
+      if (/github/.test(text)) {
+        return `[GitHub](${data.socialLinks.find((link) => link.label === 'GitHub')?.href || '#'}) ouvre le profil public.`;
+      }
+      if (/linkedin/.test(text)) {
+        return `[LinkedIn](${data.socialLinks.find((link) => link.label === 'LinkedIn')?.href || '#'}) ouvre le profil public.`;
+      }
+      return `Je peux aider sur **${profile.fullName}** et les sections actives du portfolio: ${data.navItems.map((item) => item.label).join(', ')}.`;
+    };
+
+    const open = () => {
+      panel?.classList.add('is-open');
+      panel?.setAttribute('aria-hidden', 'false');
+      toggle?.setAttribute('aria-expanded', 'true');
+      body.classList.add('ai-open');
+      if (!greeted) {
+        appendMessage('bot', renderMarkdown(`Bonjour, je suis **Portfolio AI**. Posez une question sur ${data.profile.fullName}, ou utilisez les suggestions rapides.`));
+        greeted = true;
+      }
+      input?.focus();
+      chips?.classList.add('is-hidden');
+    };
+
+    const closePanel = () => {
+      panel?.classList.remove('is-open');
+      panel?.setAttribute('aria-hidden', 'true');
+      toggle?.setAttribute('aria-expanded', 'false');
+      body.classList.remove('ai-open');
+    };
+
+    const respond = (question) => {
+      appendMessage('user', renderMarkdown(question));
+      const typing = document.createElement('div');
+      typing.className = 'ai-message ai-message--bot ai-message--typing';
+      typing.innerHTML = '<div class="ai-message__bubble"><span></span><span></span><span></span></div>';
+      messages.appendChild(typing);
+      messages.scrollTop = messages.scrollHeight;
+
+      window.setTimeout(() => {
+        typing.remove();
+        appendMessage('bot', renderMarkdown(getResponse(question)));
+      }, 650);
+    };
+
+    toggle?.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      isOpen ? closePanel() : open();
+    });
+
+    close?.addEventListener('click', closePanel);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closePanel();
+    });
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = input?.value.trim();
+      if (!value) return;
+      respond(value);
+      if (input) input.value = '';
+    });
+
+    chips?.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-ai-chip]');
+      if (!button) return;
+      respond(button.textContent || '');
+      chips.classList.add('is-hidden');
+    });
+  })();
+</script>

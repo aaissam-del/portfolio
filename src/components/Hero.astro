@@ -1,0 +1,67 @@
+---
+/**
+ * Hero section with animated name treatment, availability badge, key links and profile portrait.
+ */
+import Icon from './Icon.astro';
+import { heroStats, profile, socialLinks } from '../data/profile';
+---
+<section class="section hero" id="top">
+  <div class="container hero__grid">
+    <div class="hero__content" data-reveal>
+      <p class="section-kicker">Portfolio personnel</p>
+      <h1 class="hero__title">
+        <span class="hero__title-gradient">{profile.fullName}</span>
+      </h1>
+      <p class="hero__subtitle">{profile.subtitle}</p>
+
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        <span>{profile.availability}</span>
+      </div>
+
+      <div class="hero__actions">
+        <a class="button button--primary" href="#contact">
+          <Icon name="send" />
+          <span>Me Contacter</span>
+        </a>
+        <a class="button button--ghost" href="https://github.com/aaissam-del" target="_blank" rel="noreferrer">
+          <Icon name="github" />
+          <span>Voir GitHub</span>
+        </a>
+      </div>
+
+      <div class="hero__socials">
+        {socialLinks.map((link) => (
+          <a class="hero__pill" href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined}>
+            <Icon name={link.icon} class="hero__pill-icon" />
+            <span>{link.label}</span>
+          </a>
+        ))}
+      </div>
+
+      {heroStats.length > 0 && (
+        <div class="hero__stats">
+          {heroStats.map((stat) => (
+            <article class="hero__stat">
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <div class="hero__media" data-reveal>
+      <div class="hero__portrait-shell">
+        <div class="hero__portrait-ring"></div>
+        <img class="hero__portrait" src={profile.avatarUrl} alt={`Portrait de ${profile.fullName}`} loading="eager" />
+      </div>
+      <p class="hero__caption">{profile.title}</p>
+    </div>
+  </div>
+
+  <div class="hero__scroll-indicator" aria-hidden="true">
+    <span></span>
+    <small>Scroll</small>
+  </div>
+</section>
